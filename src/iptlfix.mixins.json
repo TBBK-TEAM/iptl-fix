@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "tbbk.iptlfix.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "server": [
+    "MixinServerCommonPacketListenerImpl"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
