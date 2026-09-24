@@ -79,8 +79,10 @@ iPortal 给 `ClientboundPlayerPositionPacket` 加了一个额外字段 `playerDi
 改版本号时记得同时改 `build.gradle` 的 `version` 和
 `src/main/resources/META-INF/neoforge.mods.toml` 里的 `[[mods]].version`。
 
-CI：`.github/workflows/build.yml`，只在 Actions 页面手动触发（`workflow_dispatch`），
-产物作为 `iptl-respawn-fix-jar` artifact 上传。
+CI：`.github/workflows/build.yml`，只在 Actions 页面手动触发（`workflow_dispatch`）。
+流程：`./gradlew build` → 校验 jar 内条目 → 用 **`actions/upload-artifact@v7`（`archive: false`）**
+上传**非压缩 artifact**，下载得到的直接是 `.jar` 而不是 `.zip`
+（[GitHub changelog](https://github.blog/changelog/2026-02-26-github-actions-now-supports-uploading-and-downloading-non-zipped-artifacts/)）。
 
 ## 验证
 

@@ -1,6 +1,9 @@
 name: Build
 
 # Manual only: run it from the Actions tab ("Run workflow").
+#
+# The jar is uploaded as a *non-archived* artifact (upload-artifact v7, `archive: false`),
+# so downloading the artifact gives you the plain .jar instead of a .zip.
 on:
   workflow_dispatch:
 
@@ -30,14 +33,19 @@ jobs:
           chmod +x ./gradlew
           ./gradlew build --no-daemon --stacktrace
 
-      - name: Show jar contents
+      - name: Verify jar contents
         run: |
-          ls -l build/libs
-          unzip -l build/libs/*.jar
+          JAR=$(ls build/libs/*.jar | head -n1)
+          ls -l "$JAR"
+          unzip -l "$JAR"
+          unzip -l "$JAR" | grep -q 'iptlfix.mixins.json'                       || { echo "::error::iptlfix.mixins.json missing from the jar"; exit 1; }
+          unzip -l "$JAR" | grep -q 'META-INF/neoforge.mods.toml'               || { echo "::error::neoforge.mods.toml missing from the jar"; exit 1; }
+          unzip -l "$JAR" | grep -q 'MixinServerCommonPacketListenerImpl.class' || { echo "::error::mixin class missing from the jar"; exit 1; }
 
-      - name: Upload jar
-        uses: actions/upload-artifact@v4
+      - name: Upload jar (not zipped)
+        uses: actions/upload-artifact@v7
         with:
           name: iptl-respawn-fix-jar
           path: build/libs/*.jar
+          archive: false
           if-no-files-found: error

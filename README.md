@@ -148,8 +148,11 @@ NeoForge 21.1.250 itself.
 ### CI
 
 `.github/workflows/build.yml` builds the jar on demand (**Actions → Build → Run
-workflow**, `workflow_dispatch` only — it does not run on push) and uploads it as the
-`iptl-respawn-fix-jar` artifact.
+workflow**, `workflow_dispatch` only — it does not run on push). It runs
+`./gradlew build`, checks the packaged jar for the expected entries, and then uploads the
+jar as a **non-archived artifact** (`actions/upload-artifact@v7` with `archive: false`),
+so downloading the artifact hands you the plain `.jar` rather than a `.zip`
+([GitHub changelog](https://github.blog/changelog/2026-02-26-github-actions-now-supports-uploading-and-downloading-non-zipped-artifacts/)).
 
 ## Uninstall
 
