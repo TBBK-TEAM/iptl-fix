@@ -130,24 +130,29 @@ With `autoExcludeServerSideMods: true`, the jar is then excluded from
 
 ## Build
 
-`build.ps1` compiles against the jars already present in a running NeoForge/Youer server
-installation (no Gradle, no internet, no mappings download):
+Standard NeoForge [ModDevGradle](https://github.com/neoforged/ModDevGradle) project — no
+hand-written classpath, no vendored jars: ModDevGradle resolves Minecraft 1.21.1 and
+NeoForge 21.1.250 itself.
 
-```powershell
-# from the repo root
-.\build.ps1 -ServerRoot "C:\path\to\server"
-
-# or if the repo sits next to the server directory (default)
-.\build.ps1
+```bash
+./gradlew build          # -> build/libs/iptl-respawn-fix-1.0.0.jar
 ```
 
-Output: `dist/iptl-respawn-fix-1.0.0.jar`.
+* JDK 21 and the Gradle wrapper are all that is required.
+* Version bumps: keep `version` in `build.gradle` and `[[mods]].version` in
+  `src/main/resources/META-INF/neoforge.mods.toml` in sync.
+* The Mixin annotation processor is intentionally disabled (`-proc:none`): the runtime is
+  Mojang-mapped and needs no refmap, and the processor would only drag ASM onto the
+  processor path.
 
-The script needs `javac`/`jar` (JDK 21) and only two classpath entries, which it locates
-automatically under `libraries/`:
+### CI
 
-* `sponge-mixin` (annotations)
-* the Minecraft server jar (`server-*-srg.jar`, Mojang mappings)
+`.github/workflows/build.yml` builds the jar on demand (**Actions → Build → Run
+workflow**, `workflow_dispatch` only — it does not run on push). It runs
+`./gradlew build`, checks the packaged jar for the expected entries, and then uploads the
+jar as a **non-archived artifact** (`actions/upload-artifact@v7` with `archive: false`),
+so downloading the artifact hands you the plain `.jar` rather than a `.zip`
+([GitHub changelog](https://github.blog/changelog/2026-02-26-github-actions-now-supports-uploading-and-downloading-non-zipped-artifacts/)).
 
 ## Uninstall
 

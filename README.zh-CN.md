@@ -70,16 +70,19 @@ iPortal 给 `ClientboundPlayerPositionPacket` 加了一个额外字段 `playerDi
 
 ## 重新编译
 
-```powershell
-$root = "C:\Users\Administrator\Desktop\tbbk-server"
-$mixin = "$root\libraries\net\fabricmc\sponge-mixin\0.15.2+mixin.0.8.7\sponge-mixin-0.15.2+mixin.0.8.7.jar"
-$mc    = "$root\libraries\net\minecraft\server\1.21.1-20240808.144430\server-1.21.1-20240808.144430-srg.jar"
-$out   = "$root\iptl-fix\build\classes"
-New-Item -ItemType Directory -Force -Path $out | Out-Null
-$files = Get-ChildItem -Recurse -Filter *.java "$root\iptl-fix\src" | Select-Object -ExpandProperty FullName
-javac -proc:none --release 21 -encoding UTF-8 -cp "$mixin;$mc" -d $out @files
-jar --create --file "$root\mods\iptl-respawn-fix-1.0.0.jar" -C $out . -C "$root\iptl-fix\src" META-INF -C "$root\iptl-fix\src" iptlfix.mixins.json
+现在是标准的 NeoForge ModDevGradle 工程（MC/NeoForge 依赖由插件自己解析，无需手写 classpath）：
+
+```bash
+./gradlew build        # 产物: build/libs/iptl-respawn-fix-1.0.0.jar
 ```
+
+改版本号时记得同时改 `build.gradle` 的 `version` 和
+`src/main/resources/META-INF/neoforge.mods.toml` 里的 `[[mods]].version`。
+
+CI：`.github/workflows/build.yml`，只在 Actions 页面手动触发（`workflow_dispatch`）。
+流程：`./gradlew build` → 校验 jar 内条目 → 用 **`actions/upload-artifact@v7`（`archive: false`）**
+上传**非压缩 artifact**，下载得到的直接是 `.jar` 而不是 `.zip`
+（[GitHub changelog](https://github.blog/changelog/2026-02-26-github-actions-now-supports-uploading-and-downloading-non-zipped-artifacts/)）。
 
 ## 验证
 
