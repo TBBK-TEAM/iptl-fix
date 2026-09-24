@@ -178,6 +178,27 @@ This is an independent compatibility patch; it is not affiliated with the Immers
 Portals team. The analysis above comes from disassembling the published
 `immersive_portals-6.0.7-all.jar`.
 
+## Credits and third-party notices
+
+* This patch contains **no code, class files or assets from Immersive Portals**. It
+  interoperates with it only by *name*: the duck interface
+  `qouteall.imm_ptl.core.ducks.IEPlayerPositionLookS2CPacket` and its two methods
+  `ip_getPlayerDimension` / `ip_setPlayerDimension` are looked up reflectively at runtime.
+* Immersive Portals is licensed under the **Apache License 2.0**
+  (Copyright 2020 qouteall — <https://github.com/iPortalTeam/ImmersivePortalsMod>); the
+  NeoForge port used for testing declares `license = "Apache-2.0"` in its
+  `META-INF/neoforge.mods.toml`. Apache-2.0 §1 explicitly excludes works that "merely link
+  (or bind by name) to the interfaces of" the Work from being Derivative Works, and no
+  Immersive Portals artifact is redistributed here, so this project does not have to be
+  licensed under Apache-2.0. The notice is included for clarity only.
+* Minecraft / NeoForge are not redistributed; they are used as compile-time dependencies
+  against an existing server installation.
+* AutoModpack's server-side-mod detection (the `side = "SERVER"` trick) was identified by
+  decompiling `automodpack-mc1.21.1-neoforge-4.0.6.jar` for interoperability; no
+  AutoModpack code is used.
+* Not affiliated with, or endorsed by, the Immersive Portals team. "Immersive Portals" is
+  used descriptively to state what this patch is compatible with.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
