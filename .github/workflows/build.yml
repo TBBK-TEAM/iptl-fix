@@ -2,23 +2,17 @@ name: Build
 
 # Manual only: run it from the Actions tab ("Run workflow").
 #
-# The jar is published as a GitHub Release asset, i.e. a raw .jar download.
-# (Workflow artifacts are always delivered as .zip by GitHub, so a Release is used
-# instead when you want the plain jar.)
+# The jar is uploaded as a *non-archived* artifact (upload-artifact v7, `archive: false`),
+# so downloading the artifact gives you the plain .jar instead of a .zip.
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Release tag to publish (e.g. v1.0.0)'
-        required: true
-        default: 'v1.0.0'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
-    name: Build and publish jar
+    name: Build jar
     runs-on: ubuntu-latest
 
     steps:
@@ -39,24 +33,19 @@ jobs:
           chmod +x ./gradlew
           ./gradlew build --no-daemon --stacktrace
 
-      - name: Verify jar
+      - name: Verify jar contents
         run: |
-          ls -l build/libs
           JAR=$(ls build/libs/*.jar | head -n1)
+          ls -l "$JAR"
           unzip -l "$JAR"
-          unzip -l "$JAR" | grep -q 'iptlfix.mixins.json'            || { echo "::error::iptlfix.mixins.json missing from the jar"; exit 1; }
-          unzip -l "$JAR" | grep -q 'META-INF/neoforge.mods.toml'    || { echo "::error::neoforge.mods.toml missing from the jar"; exit 1; }
+          unzip -l "$JAR" | grep -q 'iptlfix.mixins.json'                       || { echo "::error::iptlfix.mixins.json missing from the jar"; exit 1; }
+          unzip -l "$JAR" | grep -q 'META-INF/neoforge.mods.toml'               || { echo "::error::neoforge.mods.toml missing from the jar"; exit 1; }
           unzip -l "$JAR" | grep -q 'MixinServerCommonPacketListenerImpl.class' || { echo "::error::mixin class missing from the jar"; exit 1; }
 
-      - name: Publish raw jar to GitHub Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ inputs.tag }}
-        run: |
-          JAR=$(ls build/libs/*.jar | head -n1)
-          echo "publishing $JAR as release asset of $TAG"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "$JAR" --clobber
-          else
-            gh release create "$TAG" "$JAR" --title "$TAG" --generate-notes
-          fi
+      - name: Upload jar (not zipped)
+        uses: actions/upload-artifact@v7
+        with:
+          name: iptl-respawn-fix-jar
+          path: build/libs/*.jar
+          archive: false
+          if-no-files-found: error

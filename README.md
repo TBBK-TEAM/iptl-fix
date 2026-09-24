@@ -148,10 +148,11 @@ NeoForge 21.1.250 itself.
 ### CI
 
 `.github/workflows/build.yml` builds the jar on demand (**Actions → Build → Run
-workflow**, `workflow_dispatch` only — it does not run on push). It takes a release tag as
-input (`v1.0.0` by default) and attaches the built jar to that GitHub **Release**, so you
-get a plain `.jar` download. Workflow *artifacts* are deliberately not used: GitHub always
-delivers them as `.zip`.
+workflow**, `workflow_dispatch` only — it does not run on push). It runs
+`./gradlew build`, checks the packaged jar for the expected entries, and then uploads the
+jar as a **non-archived artifact** (`actions/upload-artifact@v7` with `archive: false`),
+so downloading the artifact hands you the plain `.jar` rather than a `.zip`
+([GitHub changelog](https://github.blog/changelog/2026-02-26-github-actions-now-supports-uploading-and-downloading-non-zipped-artifacts/)).
 
 ## Uninstall
 
