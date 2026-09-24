@@ -1,0 +1,46 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "iptl_respawn_fix"
+version = "1.0.0"
+displayName = "Immersive Portals Respawn Fix"
+authors = "NetheritePickaxe"
+description = '''
+Fixes the post-respawn disconnect caused by Immersive Portals 6.0.7.
+
+Immersive Portals adds a dimension field to ClientboundPlayerPositionPacket and
+writes it unconditionally. Packets that are not created by Immersive Portals'
+own teleport path (for example the respawn position packet on Paper/Youer
+servers) leave that field null, which makes the encoder throw
+java.lang.NullPointerException and kicks the player with
+"Internal Exception: io.netty.handler.codec.EncoderException".
+
+This mod fills in the player's current dimension right before such a packet is
+sent. It is server side only and does nothing when Immersive Portals is absent.
+'''
+
+[[mixins]]
+config = "iptlfix.mixins.json"
+
+[[dependencies.iptl_respawn_fix]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.0,)"
+ordering = "NONE"
+side = "SERVER"
+
+[[dependencies.iptl_respawn_fix]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.21.2)"
+ordering = "NONE"
+side = "SERVER"
+
+[[dependencies.iptl_respawn_fix]]
+modId = "immersive_portals_core"
+type = "optional"
+versionRange = "[6.0.0,)"
+ordering = "NONE"
+side = "SERVER"
