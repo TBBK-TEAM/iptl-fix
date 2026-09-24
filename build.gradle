@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'net.neoforged.moddev' version '2.0.146'
+}
+
+group = 'tbbk'
+version = '1.0.0'
+// Keep this in sync with [[mods]].version in src/main/resources/META-INF/neoforge.mods.toml
+
+base {
+    archivesName = 'iptl-respawn-fix'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+neoForge {
+    // NeoForge / MC version this patch is built and tested against (MC 1.21.1).
+    version = '21.1.250'
+}
+
+repositories {
+    mavenCentral()
+}
+
+// This mod is a mixin-only patch: it needs no annotation processor, and the Mixin
+// processor would pull ASM onto the processor path just to emit a refmap that a
+// Mojang-mapped NeoForge runtime does not use.
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-proc:none']
+}
+
+jar {
+    manifest {
+        attributes(
+                'Specification-Title'     : 'iptl_respawn_fix',
+                'Specification-Vendor'    : 'NetheritePickaxe',
+                'Specification-Version'   : project.version,
+                'Implementation-Title'    : 'iptl-respawn-fix',
+                'Implementation-Version'  : project.version,
+                'Implementation-Vendor'   : 'NetheritePickaxe'
+        )
+    }
+}
