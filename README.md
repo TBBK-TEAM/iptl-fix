@@ -148,8 +148,10 @@ NeoForge 21.1.250 itself.
 ### CI
 
 `.github/workflows/build.yml` builds the jar on demand (**Actions → Build → Run
-workflow**, `workflow_dispatch` only — it does not run on push) and uploads it as the
-`iptl-respawn-fix-jar` artifact.
+workflow**, `workflow_dispatch` only — it does not run on push). It takes a release tag as
+input (`v1.0.0` by default) and attaches the built jar to that GitHub **Release**, so you
+get a plain `.jar` download. Workflow *artifacts* are deliberately not used: GitHub always
+delivers them as `.zip`.
 
 ## Uninstall
 

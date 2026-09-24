@@ -80,7 +80,9 @@ iPortal 给 `ClientboundPlayerPositionPacket` 加了一个额外字段 `playerDi
 `src/main/resources/META-INF/neoforge.mods.toml` 里的 `[[mods]].version`。
 
 CI：`.github/workflows/build.yml`，只在 Actions 页面手动触发（`workflow_dispatch`），
-产物作为 `iptl-respawn-fix-jar` artifact 上传。
+触发时填一个 release tag（默认 `v1.0.0`），构建好的 jar 会作为该 GitHub **Release** 的
+附件发布 —— 下载下来就是**原始 `.jar`**，不是 zip。
+（刻意不用 workflow artifact：GitHub 的 artifact 一律打包成 zip 下载。）
 
 ## 验证
 
